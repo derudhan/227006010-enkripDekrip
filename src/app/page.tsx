@@ -1,95 +1,184 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import Image from 'next/image';
+import styles from './page.module.scss';
+import React, { useState, useEffect } from 'react';
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+const Main = () => {
+    // State untuk enkripsi & dekripsi
+    const [key, setKey] = useState('');
+    const [inputValue, setInputValue] = useState('');
+    const [outputValue, setOutputValue] = useState('');
+    const [bitLength, setBitLength] = useState(4);
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+    // Inisialisasi S-Box
+    const initSBox = (key: any) => {
+        let sBox = [];
+        for (let i = 0; i < bitLength; i++) {
+            sBox[i] = i;
+        }
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+        let j = 0;
+        for (let i = 0; i < bitLength; i++) {
+            j =
+                (j + sBox[i] + parseInt(key.charCodeAt(i % bitLength))) %
+                bitLength;
+            // Swap nilai sBox[i] dengana sBox[j]
+            let temp: any = sBox[i];
+            sBox[i] = sBox[j];
+            sBox[j] = temp;
+        }
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+        return sBox;
+    };
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
-}
+    // Generate keystream
+    const genKeyStream = (plaintext: any, sBox: any) => {
+        let keyStream = '';
+        let i = 0;
+        let j = 0;
+        for (let k = 0; k < plaintext.length; k++) {
+            i = (i + 1) % bitLength;
+            j = (j + sBox[i]) % bitLength;
+
+            // Swap nilai
+            let temp: any = sBox[i];
+            sBox[i] = sBox[j];
+            sBox[j] = temp;
+
+            let key = sBox[(sBox[i] + sBox[j]) % bitLength];
+            keyStream += String.fromCharCode(key);
+        }
+
+        return keyStream;
+    };
+
+    // Func untuk mengenkripsi plaintext
+    const encrypt = (plaintext: any, key: any) => {
+        let sBox = initSBox(key);
+        let keyStream = genKeyStream(plaintext, sBox);
+
+        let ciphertext = '';
+        for (let i = 0; i < plaintext.length; i++) {
+            // XOR plaintext dengan keystream
+
+            let encryptedChar =
+                plaintext.charCodeAt(i) ^ keyStream.charCodeAt(i);
+
+            ciphertext += String.fromCharCode(encryptedChar);
+        }
+
+        return ciphertext;
+    };
+
+    const handleEncrypt = () => {
+        // Enkripsi plaintext menggunakan kunci yang diberikan
+        const encryptedText = encrypt(inputValue, key);
+        setOutputValue(encryptedText);
+    };
+
+    // State untuk menyimpan teks yang akan diubah secara berkala
+    const [changingText, setChangingText] = useState('');
+
+    // Untuk memperbarui teks secara berkala
+    useEffect(() => {
+        // Func untuk memperbarui teks
+        const updateText = () => {
+            setOutputValue(`${encrypt(inputValue, key)}`);
+        };
+        const upKey = () => {
+            setKey(`${key.slice(0, bitLength)}`);
+        };
+        const updateDate = () => {
+            setChangingText(`${new Date().toLocaleTimeString()}`);
+        };
+
+        // Jalankan fungsi updateText setiap 10 ms
+        const intervalId = setInterval(updateText, 10);
+        const intervalDate = setInterval(updateDate, 5);
+        upKey();
+
+        // Membersihkan interval ketika komponen tidak lagi digunakan
+        return () => {
+            clearInterval(intervalId);
+            clearInterval(intervalDate);
+        };
+    }, [inputValue, key, bitLength]);
+
+    const bitHandleChange = (e: any) => {
+        let value = parseInt(e.target.value);
+        if (value > 255) {
+            value = 255;
+        }
+        if (value < 1) {
+            value = 1;
+        }
+        setBitLength(value);
+    };
+
+    return (
+        <main className={styles.mainContainer}>
+            <h1 className={styles.titleBox}>Enkriptor & Dekriptor RC4</h1>
+
+            <div className={styles.subContainer}>
+                <div className={styles.Box}>
+                    <textarea
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Input"
+                    ></textarea>
+                </div>
+
+                <div className={styles.Box}>
+                    <div>
+                        <label htmlFor="key">
+                            Key{' '}
+                            <span className={styles.miniText}>
+                                (Panjang key = bits)
+                            </span>
+                        </label>
+                        <input
+                            type="text"
+                            value={key}
+                            id="key"
+                            onChange={(e) => setKey(e.target.value)}
+                            placeholder="Input Key"
+                            maxLength={bitLength}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="bit">
+                            Jumlah Bit{' '}
+                            <span className={styles.miniText}>(Maks: 255)</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="bit"
+                            value={bitLength}
+                            onChange={bitHandleChange}
+                            placeholder="Input bit"
+                            maxLength={4}
+                            min={1}
+                            max={256}
+                        />
+                    </div>
+                </div>
+                <div className={styles.Box}>
+                    <textarea
+                        value={outputValue}
+                        onChange={(e) => setOutputValue(e.target.value)}
+                        readOnly
+                        placeholder="Output"
+                    ></textarea>
+                </div>
+            </div>
+            <div className={styles.footerBox}>
+                <h3>{changingText}</h3>
+                <h3>&copy; Delvan Ramadhan | 2024</h3>
+            </div>
+        </main>
+    );
+};
+
+export default Main;
