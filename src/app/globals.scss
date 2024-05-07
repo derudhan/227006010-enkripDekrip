@@ -54,7 +54,7 @@ input:focus {
 }
 
 textarea {
-    font-size: 12pt;
+    font-size: $font-size;
     line-height: $font-size * 2;
     font-family: $font-face;
     background: $form-bg;
@@ -101,4 +101,96 @@ input:-webkit-autofill:focus {
     -webkit-text-fill-color: $font-color;
     -webkit-box-shadow: 0 0 0px 1000px $form-bg inset;
     transition: background-color 5000s ease-in-out 0s;
+}
+
+@media (max-width: 320px) {
+    label {
+        font-size: 10pt;
+        line-height: 10pt * 2;
+    }
+    input {
+        display: block;
+        width: 100%;
+        font-size: 8pt;
+        line-height: 8pt * 2;
+    }
+
+    textarea {
+        font-size: 8pt;
+        line-height: 8pt * 2;
+        width: 200px;
+        height: 150px;
+        min-width: 100px;
+        max-width: 200px;
+        min-height: 50px;
+        max-height: 150px;
+    }
+    textarea::placeholder {
+        font-size: 8pt;
+    }
+}
+
+@media (max-width: 425px) {
+    label {
+        font-size: 10pt;
+        line-height: 10pt * 2;
+    }
+    input {
+        display: block;
+        width: 100%;
+        font-size: 8pt;
+        line-height: 8pt * 2;
+    }
+
+    textarea {
+        font-size: 8pt;
+        line-height: 8pt * 2;
+        width: 250px;
+        height: 175px;
+        min-width: 100px;
+        max-width: 250px;
+        min-height: 50px;
+        max-height: 175px;
+    }
+    textarea::placeholder {
+        font-size: 8pt;
+    }
+}
+
+@media (max-width: 768px) {
+    label {
+        font-size: 10pt;
+        line-height: 10pt * 2;
+    }
+    input {
+        display: block;
+        width: 100%;
+        font-size: 8pt;
+        line-height: 8pt * 2;
+    }
+
+    textarea {
+        font-size: 8pt;
+        line-height: 8pt * 2;
+        width: 250px;
+        height: 175px;
+        min-width: 100px;
+        max-width: 250px;
+        min-height: 50px;
+        max-height: 175px;
+    }
+    textarea::placeholder {
+        font-size: 8pt;
+    }
+}
+
+@media (max-width: 1024px) {
+    textarea {
+        width: 250px;
+        height: 200px;
+        min-width: 250px;
+        max-width: 250px;
+        min-height: 150px;
+        max-height: 200px;
+    }
 }

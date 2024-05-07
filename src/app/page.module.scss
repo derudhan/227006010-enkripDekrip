@@ -4,8 +4,8 @@ $font-size: 14pt;
 $font-face: 'Fjalla One';
 
 .mainContainer {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 
     display: flex;
     flex-direction: column;
@@ -54,4 +54,112 @@ $font-face: 'Fjalla One';
 
 .miniText {
     font-size: 10pt;
+}
+
+@media (max-width: 320px) {
+    .mainContainer {
+        justify-content: space-between;
+        row-gap: 0;
+    }
+
+    .titleBox {
+        width: 100%;
+        text-align: center;
+        background: $form-bg;
+        padding: 10px;
+    }
+
+    .Box {
+        gap: 5px;
+    }
+
+    .footerBox {
+        justify-content: space-around;
+        width: 100%;
+        padding: 10px;
+    }
+    .footerBox > h3 {
+        font-size: 8pt;
+    }
+
+    .miniText {
+        font-size: 7pt;
+    }
+
+    .subContainer {
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 425px) {
+    .mainContainer {
+        justify-content: space-between;
+        row-gap: 0;
+    }
+
+    .titleBox {
+        width: 100%;
+        text-align: center;
+        background: $form-bg;
+        padding: 10px;
+    }
+
+    .Box {
+        gap: 5px;
+    }
+
+    .footerBox {
+        justify-content: space-around;
+        width: 100%;
+        padding: 10px;
+    }
+    .footerBox > h3 {
+        font-size: 8pt;
+    }
+
+    .miniText {
+        font-size: 7pt;
+    }
+
+    .subContainer {
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mainContainer {
+        justify-content: space-between;
+        row-gap: 0;
+    }
+
+    .titleBox {
+        width: 100%;
+        text-align: center;
+        background: $form-bg;
+        padding: 10px;
+    }
+
+    .Box {
+        gap: 5px;
+    }
+
+    .footerBox {
+        justify-content: space-around;
+        width: 100%;
+        padding: 10px;
+    }
+    .footerBox > h3 {
+        font-size: 8pt;
+    }
+
+    .miniText {
+        font-size: 7pt;
+    }
+
+    .subContainer {
+        flex-direction: column;
+        gap: 24px;
+    }
 }
